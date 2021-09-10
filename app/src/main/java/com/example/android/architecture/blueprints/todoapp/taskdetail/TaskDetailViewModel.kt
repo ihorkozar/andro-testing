@@ -15,7 +15,6 @@
  */
 package com.example.android.architecture.blueprints.todoapp.taskdetail
 
-import android.app.Application
 import androidx.annotation.StringRes
 import androidx.lifecycle.*
 import com.example.android.architecture.blueprints.todoapp.Event
@@ -23,15 +22,16 @@ import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.data.Result
 import com.example.android.architecture.blueprints.todoapp.data.Result.Success
 import com.example.android.architecture.blueprints.todoapp.data.Task
-import com.example.android.architecture.blueprints.todoapp.data.source.DefaultTasksRepository
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksRepository
-import com.example.android.architecture.blueprints.todoapp.tasks.TasksViewModel
 import kotlinx.coroutines.launch
 
 /**
  * ViewModel for the Details screen.
  */
-class TaskDetailViewModel(private val tasksRepository: TasksRepository) : ViewModel() {
+class TaskDetailViewModel(
+    private val tasksRepository: TasksRepository
+) : ViewModel() {
+
     private val _taskId = MutableLiveData<String>()
 
     private val _task = _taskId.switchMap { taskId ->
@@ -80,7 +80,7 @@ class TaskDetailViewModel(private val tasksRepository: TasksRepository) : ViewMo
         }
     }
 
-    fun start(taskId: String?) {
+    fun start(taskId: String) {
         // If we're already loading or already loaded, return (might be a config change)
         if (_dataLoading.value == true || taskId == _taskId.value) {
             return
@@ -113,12 +113,12 @@ class TaskDetailViewModel(private val tasksRepository: TasksRepository) : ViewMo
     private fun showSnackbarMessage(@StringRes message: Int) {
         _snackbarText.value = Event(message)
     }
+}
 
-    @Suppress("UNCHECKED_CAST")
-    class TaskDetailViewModelFactory (
-        private val tasksRepository: TasksRepository
-    ) : ViewModelProvider.NewInstanceFactory() {
-        override fun <T : ViewModel> create(modelClass: Class<T>) =
-            (TaskDetailViewModel(tasksRepository) as T)
-    }
+@Suppress("UNCHECKED_CAST")
+class TaskDetailViewModelFactory (
+    private val tasksRepository: TasksRepository
+) : ViewModelProvider.NewInstanceFactory() {
+    override fun <T : ViewModel> create(modelClass: Class<T>) =
+        (TaskDetailViewModel(tasksRepository) as T)
 }
